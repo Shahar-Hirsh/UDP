@@ -1,13 +1,23 @@
 from scapy.all import *
 
+ip='169.254.176.55'
 while True:
-    msg = input("enter a word and exit to stop: ")
+    msg = input("enter a word to send or exit to stop: ")
 
-    for letter in msg:
-        my_packet = IP(dst='192.168.4.91') / UDP(dport=ord(letter))
+    if msg.lower() != 'exit':
+        checksum = 0
+        counter = 1
+        for letter in msg:
+            checksum += ord(letter)
+            my_packet = IP(dst=ip, id=counter) / UDP(dport=ord(letter))
+            send(my_packet, verbose=0)
+            counter += 1
+
+
+        my_packet = IP(dst=ip) / UDP(dport=1, chksum = checksum)
         send(my_packet, verbose=0)
 
-    my_packet = IP(dst='192.168.4.91') / UDP(dport=8888)
-    send(my_packet, verbose=0)
+    else:
+        break
 
 print("bye bye")
